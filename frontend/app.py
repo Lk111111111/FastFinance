@@ -4,6 +4,7 @@ from urllib import request
 import pandas as pd
 import requests
 import streamlit as st
+from sqlalchemy import false
 
 st.set_page_config(page_title="FastFinance", page_icon="💰")
 
@@ -64,7 +65,8 @@ if st.button("🔍 Einträge anzeigen"):
             if eintraege:
                 df = pd.DataFrame(eintraege)
                 df["datum"] = pd.to_datetime(df["datum"]).dt.date
-                df = df.sort_values(by="datum", ascending=False)
+                df = df.set_index("id")
+                df = df.sort_index(ascending=True)
                 st.dataframe(df)
             else:
                 st.info("ℹ️ Noch keine Einträge vorhanden.")
