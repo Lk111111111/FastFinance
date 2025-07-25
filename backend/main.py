@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Path
 from sqlalchemy.orm import Session
 
 from backend import crud, models, schemas
@@ -33,6 +33,14 @@ def entry_create(entry: schemas.EntryCreate, db: Session = Depends(get_db)):
     )
 
 
+@app.delete("/entries/{id}")  # Eintrag löschen
+def delete_by_id(id: int = Path(...), db: Session = Depends(get_db)):
+    deleted = crud.delete_entry(db=db, id=id)
+    if deleted is None:
+        return {"message": f"Kein Eintrag mit ID {id} gefunden."}
+    return {"message": f"Eintrag mit ID {id} wurde gelöscht."}
+
+
 @app.get("/entries", response_model=list[schemas.EntryRead])  # Einträge abrufen
 def entry_function(db: Session = Depends(get_db)):
     return crud.get_all_entries(db=db)
@@ -44,11 +52,6 @@ def entry_function():
 
 
 @app.put("/entries/{id}")  # Eintrag aktualisieren
-def entry_function():
-    pass
-
-
-@app.delete("/entries/{id}")  # Eintrag löschen
 def entry_function():
     pass
 
