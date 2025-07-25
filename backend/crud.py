@@ -45,6 +45,10 @@ def create_entry(
     return entry
 
 
+def get_single_entry(db: Session, id: int):
+    return db.query(models.Entry).filter(models.Entry.id == id).first()
+
+
 def delete_entry(db: Session, id: int):
     """
     Löscht einen Eintrag anhand seiner ID.

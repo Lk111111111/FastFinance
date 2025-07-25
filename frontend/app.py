@@ -1,4 +1,5 @@
 import datetime
+from urllib import request
 
 import pandas as pd
 import requests
@@ -15,7 +16,14 @@ with st.form("eintrag_formular"):
     typ = st.selectbox("📂 Typ der Transaktion", ["einnahme", "ausgabe"])
     kategorie = st.selectbox(
         "🏷️ Kategorie",
-        ["Lebensmittel", "Miete", "Transport", "Fast Food", "Gehalt", "Freizeit"],
+        [
+            "Lebensmittel",
+            "Transport",
+            "Fast Food",
+            "Gehalt",
+            "Freizeit",
+            "Monatliche Fixkosten",
+        ],
     )
     beschreibung = st.text_input(
         "📝 Beschreibung", placeholder="Optional: z. B. Pizza bei XY"
@@ -71,13 +79,37 @@ st.subheader("🗑️ Eintrag löschen")
 
 id_to_delete = st.number_input("ID zum Löschen eingeben:", min_value=1, step=1)
 
+
 if st.button("Löschen"):
     try:
-        response = requests.delete(f"http://127.0.0.1:8000/entries/{id_to_delete}")
-        if response.status_code == 200:
-            st.success(f"✅ Eintrag {id_to_delete} wurde gelöscht.")
-            st.experimental_rerun()  # Seite neu laden, damit Tabelle aktuell ist
+        response = requests.get("http://127.0.0.1:8000/entries")
+        if not response.json():
+            st.error("❌ Keine Einträge mehr in der Tabelle.")
         else:
-            st.error(f"❌ Fehler beim Löschen: {response.status_code}")
+            response = requests.delete(f"http://127.0.0.1:8000/entries/{id_to_delete}")
+            if response.status_code == 200:
+                st.success(f"✅ Eintrag {id_to_delete} wurde gelöscht.")
+            else:
+                st.error(f"❌ Fehler beim Löschen: {response.status_code}")
     except Exception as e:
-        st.error("🚫 Verbindungsfehler beim Löschen")
+        st.error(f"🚫 Verbindungsfehler beim Löschen: {e}")
+
+st.markdown("---")
+st.subheader("🔎 Einzelnen Eintrag finden")
+
+id_to_find = st.number_input(
+    "ID zum Finden eines Eintrags eingeben", min_value=1, step=1
+)
+
+if st.button("Eintrag anzeigen"):
+    try:
+        response = requests.get(f"http://127.0.0.1:8000/entries/{id_to_find}")
+        if response.status_code == 200:
+            eintrag = response.json()
+            st.dataframe(pd.DataFrame([eintrag]))  # ✅ als Liste übergeben
+        elif response.status_code == 404:
+            st.warning("❗ Kein Eintrag mit dieser ID gefunden.")
+        else:
+            st.error(f"Fehler: {response.status_code}")
+    except Exception as e:
+        st.error(f"Verbindungsfehler: {e}")

@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Path
+from fastapi import Depends, FastAPI, HTTPException, Path
 from sqlalchemy.orm import Session
 
 from backend import crud, models, schemas
@@ -46,9 +46,15 @@ def entry_function(db: Session = Depends(get_db)):
     return crud.get_all_entries(db=db)
 
 
-@app.get("/entries/{id}")  # Eintrag anzeigen
-def entry_function():
-    pass
+@app.get("/entries/{id}", response_model=schemas.EntryRead)
+def get_single_entry_in_entrys_table(
+    id: int = Path(...),
+    db: Session = Depends(get_db),
+):
+    entry = crud.get_single_entry(db=db, id=id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Eintrag nicht gefunden")
+    return entry
 
 
 @app.put("/entries/{id}")  # Eintrag aktualisieren
