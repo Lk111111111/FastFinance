@@ -58,8 +58,18 @@ def get_single_entry_in_entrys_table(
 
 
 @app.put("/entries/{id}")  # Eintrag aktualisieren
-def entry_function():
-    pass
+def change_single_entry(
+    db: Session = Depends(get_db),
+    id: int = Path(...),
+    update_data: schemas.EntryUpdate = ...,
+):
+    entry = crud.get_single_entry(db=db, id=id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Eintrag nicht gefunden")
+    updated = crud.update_entry(
+        db=db, id=id, **update_data.model_dump(exclude_unset=True)
+    )
+    return updated
 
 
 @app.get("/summary")  # Summe Einnahmen/Ausgaben

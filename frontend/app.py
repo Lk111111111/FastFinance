@@ -7,8 +7,8 @@ import streamlit as st
 
 st.set_page_config(page_title="FastFinance", page_icon="💰")
 
-st.title("💰 FastFinance")
-st.subheader("📥 Neue Transaktion erfassen")
+st.title("FastFinance")
+st.subheader("Neue Transaktion erfassen")
 
 
 with st.form("eintrag_formular"):
@@ -53,7 +53,7 @@ with st.form("eintrag_formular"):
 st.markdown("---")
 
 
-st.subheader("📊 Alle Ein- und Ausgaben anzeigen")
+st.subheader("Alle Ein- und Ausgaben anzeigen")
 
 # 🔍 Einträge abrufen
 if st.button("🔍 Einträge anzeigen"):
@@ -75,7 +75,7 @@ if st.button("🔍 Einträge anzeigen"):
 
 # 🗑️ Eintrag löschen
 st.markdown("---")
-st.subheader("🗑️ Eintrag löschen")
+st.subheader("Eintrag löschen")
 
 id_to_delete = st.number_input("ID zum Löschen eingeben:", min_value=1, step=1)
 
@@ -95,7 +95,7 @@ if st.button("Löschen"):
         st.error(f"🚫 Verbindungsfehler beim Löschen: {e}")
 
 st.markdown("---")
-st.subheader("🔎 Einzelnen Eintrag finden")
+st.subheader("Einzelnen Eintrag finden")
 
 id_to_find = st.number_input(
     "ID zum Finden eines Eintrags eingeben", min_value=1, step=1
@@ -106,10 +106,65 @@ if st.button("Eintrag anzeigen"):
         response = requests.get(f"http://127.0.0.1:8000/entries/{id_to_find}")
         if response.status_code == 200:
             eintrag = response.json()
-            st.dataframe(pd.DataFrame([eintrag]))  # ✅ als Liste übergeben
+            st.dataframe(pd.DataFrame([eintrag]))
         elif response.status_code == 404:
             st.warning("❗ Kein Eintrag mit dieser ID gefunden.")
         else:
             st.error(f"Fehler: {response.status_code}")
     except Exception as e:
         st.error(f"Verbindungsfehler: {e}")
+
+st.subheader("🔄 Einzelnen Eintrag aktualisieren")
+
+
+id_to_find = st.number_input("ID des Eintrags", min_value=1, step=1)
+
+
+if st.button("Eintrag laden"):
+    try:
+        response = requests.get(f"http://127.0.0.1:8000/entries/{id_to_find}")
+        if response.status_code == 200:
+            st.session_state.eintrag = response.json()
+        elif response.status_code == 404:
+            st.warning("Eintrag nicht gefunden.")
+        else:
+            st.error(f"Fehler: {response.status_code}")
+    except Exception as e:
+        st.error(f"Verbindungsfehler: {e}")
+
+
+if "eintrag" in st.session_state:
+    eintrag = st.session_state.eintrag
+
+    new_betrag = st.number_input("Neuer Betrag", value=eintrag["betrag"], step=0.01)
+    new_typ = st.selectbox(
+        "Neuer Typ",
+        ["einnahme", "ausgabe"],
+        index=["einnahme", "ausgabe"].index(eintrag["typ"]),
+    )
+    new_kategorie = st.text_input("Neue Kategorie", value=eintrag["kategorie"])
+    new_beschreibung = st.text_input("Neue Beschreibung", value=eintrag["beschreibung"])
+    new_datum = st.date_input(
+        "Neues Datum", value=datetime.date.fromisoformat(eintrag["datum"])
+    )
+
+    if st.button("Eintrag aktualisieren"):
+        payload = {
+            "betrag": new_betrag,
+            "typ": new_typ,
+            "kategorie": new_kategorie,
+            "beschreibung": new_beschreibung,
+            "datum": str(new_datum),
+        }
+        try:
+            update_response = requests.put(
+                f"http://127.0.0.1:8000/entries/{id_to_find}",
+                json=payload,
+            )
+            if update_response.status_code == 200:
+                st.success("✅ Eintrag aktualisiert.")
+                del st.session_state.eintrag
+            else:
+                st.error(f"Fehler: {update_response.status_code}")
+        except Exception as e:
+            st.error(f"Verbindungsfehler: {e}")

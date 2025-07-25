@@ -1,7 +1,9 @@
 import datetime
-from typing import Literal
+from typing import Literal, Optional
+from unittest.mock import Base
 
 from pydantic import BaseModel
+from sqlalchemy import literal
 
 
 class EntryCreate(BaseModel):
@@ -27,3 +29,11 @@ class EntryRead(EntryCreate):
 
     class Config:
         from_attributes = True  # fastapi orm modelle werden zu json
+
+
+class EntryUpdate(BaseModel):
+    betrag: Optional[float]
+    typ: Optional[str]
+    kategorie: Optional[str]
+    beschreibung: Optional[str]
+    datum: Optional[datetime.date]

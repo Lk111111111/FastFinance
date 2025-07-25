@@ -1,0 +1,16 @@
+[server]
+headless = true
+port = 8501
+runOnSave = true
+enableCORS = false
+
+[theme]
+base = "dark"
+primaryColor = "#ff37a6"
+backgroundColor = "#0d0d0d"
+secondaryBackgroundColor = "#1a1a1a"
+textColor = "#e0e0e0"
+
+[client]
+showErrorDetails = "full"
+toolbarMode = "auto"
