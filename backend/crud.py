@@ -1,8 +1,9 @@
-from sqlalchemy.orm import Session
-from . import models
 import datetime
 
-# crud = create, read, update, delete
+from sqlalchemy.orm import Session
+
+from . import models
+from .database import SessionLocal, engine
 
 
 def create_entry(
@@ -13,7 +14,20 @@ def create_entry(
     beschreibung: str = "",
     datum: str = None,
 ):
-    # creates new entry in table entry autoamtically assigns primary key
+    """
+    Erstelle einen neuen Eintrag in der Datenbank.
+
+    Args:
+        db (Session): Aktive SQLAlchemy-Datenbank-Session.
+        betrag (float): Betrag des Eintrags (z. B. 12.50).
+        typ (str): Art des Eintrags, z. B. "einnahme" oder "ausgabe".
+        kategorie (str): Kategorie des Eintrags, z. B. "Lebensmittel".
+        beschreibung (str, optional): Freitextbeschreibung.
+        datum (str, optional): Datum im Format 'YYYY-MM-DD'. Wenn nicht angegeben, wird heute verwendet.
+
+    Returns:
+        models.Entry: Das neu erstellte Entry-Objekt.
+    """
     if datum is None:
         datum = datetime.date.today()
     else:
@@ -32,7 +46,16 @@ def create_entry(
 
 
 def delete_entry(db: Session, id: int):
-    # deletes entry with primary key id
+    """
+    Löscht einen Eintrag anhand seiner ID.
+
+    Args:
+        db (Session): Aktive Datenbankverbindung.
+        id (int): Primärschlüssel (ID) des zu löschenden Eintrags.
+
+    Returns:
+        models.Entry | None: Das gelöschte Entry-Objekt, oder None wenn nicht gefunden.
+    """
     entry = db.query(models.Entry).filter(models.Entry.id == id).first()
     if entry is None:
         return None
@@ -50,7 +73,23 @@ def update_entry(
     beschreibung: str = None,
     datum: str = None,
 ):
-    # updates the entry table based on given parameters
+    """
+    Aktualisiert einen vorhandenen Eintrag mit übergebenen Werten.
+
+    Nur Felder, die nicht None sind, werden aktualisiert.
+
+    Args:
+        db (Session): Aktive Datenbankverbindung.
+        id (int): ID des zu aktualisierenden Eintrags.
+        betrag (float, optional): Neuer Betrag.
+        typ (str, optional): Neuer Typ ("einnahme" oder "ausgabe").
+        kategorie (str, optional): Neue Kategorie.
+        beschreibung (str, optional): Neue Beschreibung.
+        datum (str, optional): Neues Datum im Format 'YYYY-MM-DD'.
+
+    Returns:
+        models.Entry | None: Der aktualisierte Eintrag oder None, wenn nicht gefunden.
+    """
     entry = db.query(models.Entry).filter(models.Entry.id == id).first()
     if entry is None:
         return None
@@ -70,4 +109,25 @@ def update_entry(
 
 
 def get_all_entries(db: Session):
+    """
+    Gibt alle vorhandenen Einträge aus der Datenbank zurück.
+
+    Args:
+        db (Session): Aktive Datenbankverbindung.
+
+    Returns:
+        list[models.Entry]: Liste aller gespeicherten Einträge.
+    """
     return db.query(models.Entry).all()
+
+
+def delete_all_entries(db: Session):
+    """
+    Löscht alle Einträge aus der Datenbank.
+
+    Args:
+        db (Session): Aktive Datenbankverbindung.
+    """
+    all_entries = get_all_entries(db)
+    for entry in all_entries:
+        delete_entry(db, entry.id)
