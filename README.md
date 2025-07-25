@@ -1,4 +1,4 @@
-# 💸 FastFinance – Dein persönlicher Einnahmen- und Ausgaben-Tracker
+# FastFinance – Dein persönlicher Einnahmen- und Ausgaben-Tracker
 
 FastFinance ist ein minimalistisches Tool zur Verwaltung und Analyse deiner persönlichen Finanzen.  
 Du kannst Einnahmen und Ausgaben manuell eintragen, nach Kategorien filtern, und dir einfache Auswertungen anzeigen lassen – alles über eine moderne Oberfläche (Streamlit) und ein API-Backend (FastAPI).
