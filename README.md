@@ -17,6 +17,12 @@ Du kannst Einnahmen und Ausgaben manuell eintragen, nach Kategorien filtern, und
 
 ---
 
+## Frontend Aktuell
+
+![alt text](image.png)
+
+---
+
 ## 🧱 Tech Stack
 
 | Komponente    | Beschreibung                   |
