@@ -28,10 +28,10 @@ def create_entry(
     Returns:
         models.Entry: Das neu erstellte Entry-Objekt.
     """
-    if datum is None:
-        datum = datetime.date.today()
-    else:
+    if isinstance(datum, str):
         datum = datetime.date.fromisoformat(datum)
+    elif datum is None:
+        datum = datetime.date.today()
     entry = models.Entry(
         betrag=betrag,
         typ=typ,

@@ -8,11 +8,11 @@ class EntryCreate(BaseModel):
     typ: str
     kategorie: str
     beschreibung: str
-    datum: str
+    datum: datetime.date
 
 
 class EntryRead(EntryCreate):
     id: int
 
     class Config:
-        orm_mode = True  # fastapi orm modelle werden zu json
+        from_attributes = True  # fastapi orm modelle werden zu json

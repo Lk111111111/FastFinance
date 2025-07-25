@@ -33,9 +33,9 @@ def entry_create(entry: schemas.EntryCreate, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/entries")  # Einträge abrufen
-def entry_function():
-    pass
+@app.get("/entries", response_model=list[schemas.EntryRead])  # Einträge abrufen
+def entry_function(db: Session = Depends(get_db)):
+    return crud.get_all_entries(db=db)
 
 
 @app.get("/entries/{id}")  # Eintrag anzeigen
