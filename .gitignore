@@ -1,0 +1,13 @@
+# SQLite-Datenbank
+*.db
+
+# Virtuelle Umgebung
+venv/
+
+# Bytecode & Cache
+__pycache__/
+*.pyc
+
+# IDE/Editor-Ordner
+.vscode/
+.idea/
