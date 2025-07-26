@@ -122,11 +122,16 @@ st.subheader("🔄 Einzelnen Eintrag aktualisieren")
 id_to_find = st.number_input("ID des Eintrags", min_value=1, step=1)
 
 
+if "eintrag_laden" not in st.session_state:
+    st.session_state.eintrag_laden = False
+
+# Button-Handler
 if st.button("Eintrag laden"):
     try:
         response = requests.get(f"http://127.0.0.1:8000/entries/{id_to_find}")
         if response.status_code == 200:
             st.session_state.eintrag = response.json()
+            st.session_state.eintrag_laden = True  # Trigger zum Rendern
         elif response.status_code == 404:
             st.warning("Eintrag nicht gefunden.")
         else:
@@ -135,7 +140,7 @@ if st.button("Eintrag laden"):
         st.error(f"Verbindungsfehler: {e}")
 
 
-if "eintrag" in st.session_state:
+if st.session_state.get("eintrag_laden"):
     eintrag = st.session_state.eintrag
 
     new_betrag = st.number_input("Neuer Betrag", value=eintrag["betrag"], step=0.01)

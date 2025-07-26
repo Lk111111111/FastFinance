@@ -19,7 +19,7 @@ Du kannst Einnahmen und Ausgaben manuell eintragen, nach Kategorien filtern, und
 
 ## Frontend Aktuell
 
-![alt text](image.png)
+<video controls src="streamlit-app-2025-07-25-21-07-41.webm" title="A small demonstration video"</video>
 
 ---
 
